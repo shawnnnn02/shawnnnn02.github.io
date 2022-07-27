@@ -16,7 +16,7 @@
 
         <?php
 
-        $firstname = $lastname = $email = $password = $gender = $birthdate = $status = "";
+        $firstname = $lastname = $email = $password = $gender = $birthdate = $status = ""; //sadad
 
         $save = true;
         if (!empty($_POST)) {
