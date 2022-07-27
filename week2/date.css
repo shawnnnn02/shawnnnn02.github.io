@@ -1,0 +1,65 @@
+#container {
+    display: flex;
+    justify-content: center;
+    padding: 20%;
+}
+
+#firstdate {
+    justify-content: center;
+    margin: 0 100px;
+}
+
+.box1 {
+    border-bottom: solid 2px black;
+    width: 100%;
+    font-size: 100px;
+}
+
+.box2 {
+    text-align: center;
+    font-size: 20px;
+}
+
+#seconddate {
+    justify-content: center;
+    margin: 0 100px;
+}
+
+.box3 {
+    border: solid 2px black;
+    font-size: 100px;
+    width: 100%;
+    text-align: center;
+}
+
+.box4 {
+    background-color: black;
+    color: white;
+    padding: 6px;
+    width: 92.2%;
+    text-align: center;
+    font-size: 14px;
+}
+
+#thirddate {
+    justify-content: center;
+    display: flex;
+    margin: 0 100px;
+}
+
+.box5 {
+    font-size: 100px;
+}
+
+.box6 {
+    font-size: 15px;
+    padding: 15px 0 0 0;
+}
+
+@media(max-width:400px) {
+    #container {
+        width: 50%;
+        justify-content: center;
+        padding: 20%;
+    }
+}
