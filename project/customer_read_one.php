@@ -12,7 +12,7 @@
     <!-- container -->
     <div class="container">
         <div class="page-header">
-            <h1>Read Customers DETAILS</h1>
+            <h1>Read Customer’s DETAILS</h1>
         </div>
 
         <!-- PHP read one record will be here -->
@@ -27,7 +27,7 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, first_name, last_name, email, passw, birth_date, gender, status FROM customer WHERE id = ? ";
+            $query = "SELECT id, firstname, lastname, email, passd, birth_date, gender, status FROM customer WHERE id = ? ";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -40,10 +40,10 @@
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // values to fill up our form  //extract($row);
-            $first_name = $row['first_name'];
-            $last_name = $row['last_name'];
+            $firstname = $row['firstname'];
+            $lastname = $row['lastname'];
             $email = $row['email'];
-            $passw = $row['passw'];
+            $passd = $row['passd'];
             $birth_date = $row['birth_date'];
             $gender = $row['gender'];
             $status = $row['status'];
@@ -60,11 +60,11 @@
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
                 <td>First Name</td>
-                <td><?php echo htmlspecialchars($first_name, ENT_QUOTES);  ?></td>
+                <td><?php echo htmlspecialchars($firstname, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Last Name</td>
-                <td><?php echo htmlspecialchars($last_name, ENT_QUOTES);  ?></td>
+                <td><?php echo htmlspecialchars($lastname, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Email</td>
@@ -72,7 +72,7 @@
             </tr>
             <tr>
                 <td>Password</td>
-                <td><?php echo htmlspecialchars($passw, ENT_QUOTES);  ?></td>
+                <td><?php echo htmlspecialchars($passd, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Date of Birth</td>

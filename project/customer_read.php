@@ -23,7 +23,7 @@
         // delete message prompt will be here
 
         // select all data
-        $query = "SELECT id, first_name, last_name, email, status FROM customer ORDER BY id DESC";
+        $query = "SELECT id, firstname, lastname, email, status FROM customer ORDER BY id DESC";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
@@ -43,8 +43,8 @@
             //creating our table heading
             echo "<tr>";
             echo "<th>ID</th>";
-            echo "<th>First name</th>";
-            echo "<th>Last name</th>";
+            echo "<th>Firstname</th>";
+            echo "<th>Lastname</th>";
             echo "<th>Email</th>";
             echo "<th>Status</th>";
             echo "<th>Action</th>";
@@ -59,8 +59,8 @@
                 // creating new table row per record
                 echo "<tr>";
                 echo "<td>{$id}</td>";
-                echo "<td>{$first_name}</td>";
-                echo "<td>{$last_name}</td>";
+                echo "<td>{$firstname}</td>";
+                echo "<td>{$lastname}</td>";
                 echo "<td>{$email}</td>";
                 echo "<td>{$status}</td>";
                 echo "<td>";
