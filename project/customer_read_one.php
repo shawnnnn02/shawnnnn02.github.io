@@ -2,21 +2,20 @@
 <html>
 
 <head>
-    <title>Customer Details</title>
+    <title>PDO - Read One Record - PHP CRUD Tutorial</title>
     <!-- Latest compiled and minified Bootstrap CSS -->
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
 </head>
-
 <body>
-
+ 
     <!-- container -->
     <div class="container">
         <div class="page-header">
-            <h1>Customer Details</h1>
+            <h1>Read Customers DETAILS</h1>
         </div>
 
+        <!-- PHP read one record will be here -->
         <?php
         // get passed parameter value, in this case, the record ID
         // isset() is a PHP function used to verify if a value is there or not
@@ -28,7 +27,7 @@
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, password, email, firstname, lastname, gender, birthdate, status FROM customer WHERE id = ?";
+            $query = "SELECT id, first_name, last_name, email, passw, birth_date, gender, status FROM customer WHERE id = ? ";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -41,16 +40,13 @@
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // values to fill up our form  //extract($row);
-            $firstname = $row['firstname'];
-            $lastname = $row['lastname'];
+            $first_name = $row['first_name'];
+            $last_name = $row['last_name'];
             $email = $row['email'];
+            $passw = $row['passw'];
+            $birth_date = $row['birth_date'];
             $gender = $row['gender'];
-            $year = $row['year'];
-            $month = $row['month'];
-            $day = $row['day'];
-            $birthdate = $row['bithdate'];
             $status = $row['status'];
-
         }
 
         // show error
@@ -59,23 +55,16 @@
         }
         ?>
 
-
         <!-- HTML read one record table will be here -->
-
         <!--we have our html table here where the record will be displayed-->
-
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
-                <td>Customer ID</td>
-                <td><?php echo htmlspecialchars($id, ENT_QUOTES);  ?></td>
-            </tr>
-            <tr>
                 <td>First Name</td>
-                <td><?php echo htmlspecialchars($firstname, ENT_QUOTES);  ?></td>
+                <td><?php echo htmlspecialchars($first_name, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Last Name</td>
-                <td><?php echo htmlspecialchars($lastname, ENT_QUOTES);  ?></td>
+                <td><?php echo htmlspecialchars($last_name, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Email</td>
@@ -83,15 +72,15 @@
             </tr>
             <tr>
                 <td>Password</td>
-                <td><?php echo htmlspecialchars($password, ENT_QUOTES);  ?></td>
+                <td><?php echo htmlspecialchars($passw, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
-                <td>gender</td>
+                <td>Date of Birth</td>
+                <td><?php echo htmlspecialchars($birth_date, ENT_QUOTES);  ?></td>
+            </tr>
+            <tr>
+                <td>Gender</td>
                 <td><?php echo htmlspecialchars($gender, ENT_QUOTES);  ?></td>
-            </tr>
-            <tr>
-                <td>Date Of Birth</td>
-                <td><?php echo htmlspecialchars($birthdate, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
                 <td>Status</td>
@@ -100,14 +89,13 @@
             <tr>
                 <td></td>
                 <td>
-                    <a href='customer_read.php' class='btn btn-danger'>Back to Customer List</a>
+                    <a href='customer_read.php' class='btn btn-danger'>Back to customer list</a>
                 </td>
             </tr>
         </table>
 
-
     </div> <!-- end .container -->
 
-</body>
+    </body>
 
 </html>
