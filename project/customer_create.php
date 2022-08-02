@@ -117,6 +117,14 @@ function validateDate($date, $format = 'Y-n-d')
                 $msg = $msg . "Invalid password format (Password format should be more than 6 character, at least 1 uppercase, 1 lowercase & 1 number)<br>";
                 $save = false;
             }
+            $confirmpassd = $_POST['confirmpassd'];
+            if (empty($confirmpassd)) {
+                $msg = $msg . "Please do not leave confirm password empty<br>";
+                $save = false;
+            }elseif ($confirmpassd != $passd){
+                $msg = $msg ."Password must be same with confirm password";
+                $save = false;
+            }
 
             //birth date check//
             $birth_date = $_POST['birth_date_year'] . "-" . $_POST['birth_date_month'] . "-" . $_POST['birth_date_day'];
@@ -157,7 +165,7 @@ function validateDate($date, $format = 'Y-n-d')
             include 'config/database.php';
             try {
                 // insert query
-                $query = "INSERT INTO customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, birth_date=:birth_date, gender=:gender, status=:status, created=:created";
+                $query = "INSERT INTO customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, confirmpassd=:confirmpassd, birth_date=:birth_date, gender=:gender, status=:status, created=:created";
                 // prepare query for execution
                 $stmt = $con->prepare($query);
 
@@ -166,19 +174,14 @@ function validateDate($date, $format = 'Y-n-d')
                 $stmt->bindParam(':lastname', $lastname);
                 $stmt->bindParam(':email', $email);
                 $stmt->bindParam(':passd', $passd);
+                $stmt->bindParam(':confirmpassd', $confirmpassd);
                 $stmt->bindParam(':birth_date', $birth_date);
                 $stmt->bindParam(':gender', $gender);
                 $stmt->bindParam(':status', $status);
+
                 // specify when this record was inserted to the database
                 $created = date('Y-m-d H:i:s');
                 $stmt->bindParam(':created', $created);
-
-                // Execute the query
-                // if (!empty($stmt->execute())) {
-                //     echo "<div class='alert alert-success'>Record was saved.</div>";
-                // }else {
-                //     echo "<div class='alert alert-danger'>Unable to save record.</div>";
-                // }
 
                 if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
@@ -212,6 +215,10 @@ function validateDate($date, $format = 'Y-n-d')
                 <tr>
                     <td>Password</td>
                     <td><input type='text' name='passd' class='form-control' value="<?php if (isset($_POST['passd'])) echo $_POST['passd']; ?>" /></td>
+                </tr>
+                <tr>
+                    <td>Confirm Password</td>
+                    <td><input type='text' name='confirmpassd' class='form-control' value="<?php if (isset($_POST['confirmpassd'])) echo $_POST['confirmpassd']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Date of Birth</td>
