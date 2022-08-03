@@ -145,14 +145,22 @@ function validateDate($date, $format = 'Y-n-j')
                 }
 
                 $expr_date = $_POST['expr_date_year'] . "-" . $_POST['expr_date_month'] . "-" . $_POST['expr_date_day'];
-                $dateM = date_create($manu_date);
-                $dateE = date_create($expr_date);
-                $x = date_diff($dateM, $dateE);
+                $dateManu = date_create($manu_date);
+                $dateExpr = date_create($expr_date);
+                $x = date_diff($dateManu, $dateExpr);
+                var_dump($x);
+                var_dump((int)($x->format("%R%a")));
 
                 if (validateDate($expr_date) == false) {
                     $msg = $msg . "Expiry date selected is not exist<br>";
                     $save = false;
-                } else if ($x->format("%R%a") < 0) {
+                } else if ($x->format("%m") >= 1) {
+                    if((int)($x->format("%R%a") <= 0)) {
+                        $msg = $msg . "Expiry date should not earlier than manufacture date<br>";
+                        $save = false;
+                    }
+                    
+                } else if ($x->format("%m") < 1 ){
                     $msg = $msg . "Expiry date should not earlier than manufacture date<br>";
                     $save = false;
                 }
