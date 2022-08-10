@@ -3,7 +3,7 @@ function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
 {
 
     if (empty($sday)) {
-        $sday = date('d');
+        $sday = date('j');
     }
 
     if (empty($smonth)) {
@@ -46,7 +46,7 @@ function dropdown($sday = "", $smonth = "", $syear = "", $datetype = "")
 }
 ?>
 <?php
-function validateDate($date, $format = 'Y-n-d')
+function validateDate($date, $format = 'Y-n-j')
 {
     $d = DateTime::createFromFormat($format, $date);
     // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
@@ -106,27 +106,88 @@ function validateDate($date, $format = 'Y-n-d')
             $dateM = date_create($manu_date);
             $dateE = date_create($expr_date);
             $x = date_diff($dateM, $dateE);
+            // var_dump((int)($x->format("%m")));
+            // var_dump((int)($x->format("%R%a")));
             if (validateDate($expr_date) == false) {
                 $msg = $msg . "Expiry date selected is not exist<br>";
                 $save = false;
-            } else if ($x->format("%R%a") < 0) { 
+            }
+            if ((int)($x->format("%m") >= 1)) {
+                if ((int)($x->format("%R%a") <= 0)) {
+                    $msg = $msg . "Expiry date should not earlier than manufacture date<br>";
+                    $save = false;
+                }
+            } elseif ((int)($x->format("%m") < 1)) {
                 $msg = $msg . "Expiry date should not earlier than manufacture date<br>";
                 $save = false;
             }
 
             //status check//
-            $status = htmlspecialchars(strip_tags($_POST['status']));
-            if (empty($status)) {
+            if (isset($_POST['status'])) {
+                $status = htmlspecialchars(strip_tags($_POST['status']));
+            } else {
                 $msg = $msg . "Please do not leave status empty<br>";
                 $save = false;
             }
 
+            // new 'image' field
+            $image = !empty($_FILES["pimage"]["name"])
+                ? sha1_file($_FILES['pimage']['tmp_name']) . "-" . basename($_FILES["pimage"]["name"])
+                : "";
+            $image = htmlspecialchars(strip_tags($image));
+            if ($image) {
+
+                $target_directory = "uploads/";
+                $target_file = $target_directory . $image;
+                $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
+
+                // error message is empty
+                $file_upload_error_messages = "";
+
+                // make sure certain file types are allowed
+                $allowed_file_types = array("jpg", "jpeg", "png", "gif");
+                if (!in_array($file_type, $allowed_file_types)) {
+                    $file_upload_error_messages .= "<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                }
+                // make sure file does not exist
+                if (file_exists($target_file)) {
+                    $file_upload_error_messages .= "<div>Image already exists. Try to change file name.</div>";
+                }
+                // make sure submitted file is not too large, can't be larger than 1MB
+                if ($_FILES['pimage']['size'] > 1024000) {
+                    $file_upload_error_messages .= "<div>Image must be less than 1 MB in size.</div>";
+                }
+                // make sure the 'uploads' folder exists
+                // if not, create it
+                if (!is_dir($target_directory)) {
+                    mkdir($target_directory, 0777, true);
+                }
+            }
+            // if $file_upload_error_messages is still empty
+            if (empty($file_upload_error_messages)) {
+                // it means there are no errors, so try to upload the file
+                if (move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)) {
+                    // it means photo was uploaded
+                } else {
+                    echo "<div class='alert alert-danger'>";
+                    echo "<div>Unable to upload photo.</div>";
+                    echo "<div>Update the record to upload photo.</div>";
+                    echo "</div>";
+                }
+            } // if $file_upload_error_messages is NOT empty
+            else {
+                // it means there are some errors, so show them to user
+                echo "<div class='alert alert-danger'>";
+                echo "<div>{$file_upload_error_messages}</div>";
+                echo "<div>Update the record to upload photo.</div>";
+                echo "</div>";
+            }
 
             // include database connection
             include 'config/database.php';
             try {
                 // insert query
-                $query = "INSERT INTO products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status, created=:created";
+                $query = "INSERT INTO products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status, image=:image, created=:created";
                 // prepare query for execution
                 $stmt = $con->prepare($query);
 
@@ -137,6 +198,7 @@ function validateDate($date, $format = 'Y-n-d')
                 $stmt->bindParam(':manu_date', $manu_date);
                 $stmt->bindParam(':expr_date', $expr_date);
                 $stmt->bindParam(':status', $status);
+                $stmt->bindParam(':image', $image);
                 // specify when this record was inserted to the database
                 $created = date('Y-m-d H:i:s');
                 $stmt->bindParam(':created', $created);
@@ -152,7 +214,7 @@ function validateDate($date, $format = 'Y-n-d')
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
                 } else {
-                    echo "<div class='alert alert-danger'>Unable to save record:<br>$msg</div>";
+                    echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
                 }
             }
             // show error
@@ -163,25 +225,25 @@ function validateDate($date, $format = 'Y-n-d')
         ?>
 
         <!-- html form here where the product information will be entered -->
-        <form name="productform" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return validateForm()" method="post" required>
+        <form name="productform" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return validateForm()" method="post" enctype="multipart/form-data" required>
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Name</td>
-                    <td><input type='text' name='name' class='form-control' value /></td>
+                    <td><input type='text' name='name' class='form-control' value="<?php if (isset($_POST['name'])) echo $_POST['name']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Description</td>
-                    <td><textarea name='description' class='form-control'></textarea></td>
+                    <td><textarea name='description' class='form-control'><?php if (isset($_POST['description'])) echo $_POST['description']; ?></textarea></td>
                 </tr>
                 <tr>
                     <td>Price</td>
-                    <td><input type='text' name='price' class='form-control' /></td>
+                    <td><input type='text' name='price' class='form-control' value="<?php if (isset($_POST['price'])) echo $_POST['price']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Manufacture date </td>
                     <td>
                         <?php
-                        dropdown($sday = "", $smonth = "", $syear = "2021", $datetype = "manu_date");
+                        dropdown($sday = "", $smonth = "", $syear = "", $datetype = "manu_date");
                         ?>
                     </td>
 
@@ -197,9 +259,13 @@ function validateDate($date, $format = 'Y-n-d')
                 <tr>
                     <td>Status</td>
                     <td>
-                        <input type="radio" name="status" value="available" checked><label>Available</label>&nbsp;
-                        <input type="radio" name="status" value="not_available"><label>Not Available</label>
+                        <input type="radio" name="status" value="available" <?php if (isset($_POST["status"]) && ($status == "available")) echo 'checked'; ?>><label>Available</label>&nbsp;
+                        <input type="radio" name="status" value="not_available" <?php if (isset($_POST["status"]) && ($status == "not_available")) echo 'checked'; ?>><label>Not Available</label>
                     </td>
+                </tr>
+                <tr>
+                    <td>Photo</td>
+                    <td><input type="file" name="pimage" /></td>
                 </tr>
                 <tr>
                     <td></td>

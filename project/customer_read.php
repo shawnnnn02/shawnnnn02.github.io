@@ -21,6 +21,14 @@
         include 'config/database.php';
 
         // delete message prompt will be here
+        // if it was redirected from delete.php
+        $action = isset($_GET['action']) ? $_GET['action'] : "";
+
+        if($action=='deleted'){
+            echo "<div class='alert alert-success'>Record was deleted.</div>";
+        }
+        
+
 
         // select all data
         $query = "SELECT id, firstname, lastname, email, status FROM customer ORDER BY id DESC";
@@ -71,7 +79,7 @@
                 echo "<a href='customer_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_user({$id});'  class='btn btn-danger'>Delete</a>";
+                echo "<a href='#' onclick='delete_user({$id});' class='btn btn-danger'>Delete</a>";
                 echo "</td>";
                 echo "</tr>";
             }
@@ -87,6 +95,19 @@
         ?>
 
     </div> <!-- end .container -->
+
+    <script>
+        // confirm record deletion
+        function delete_user(id) {
+
+            var answer = confirm('Are you sure?');
+            if (answer) {
+                // if user clicked ok,
+                // pass the id to delete.php and execute the delete query
+                window.location = 'delete_user.php?id=' + id;
+            }
+        }
+    </script>
 
     <!-- confirm delete record will be here -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
