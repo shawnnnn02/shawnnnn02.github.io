@@ -59,7 +59,7 @@ function validateDate($date, $format = 'Y-n-j')
 
 <head>
     <title>PDO - Read Records - PHP CRUD Tutorial</title>
-    <!-- Latest compiled and minified Bootstrap CSS →
+    <!-- Latest compiled and minified Bootstrap CSS -->
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
@@ -78,11 +78,12 @@ function validateDate($date, $format = 'Y-n-j')
 
         //include database connection
         include 'config/database.php';
+        include 'function/function.php';
 
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, name, description, price, manu_date, expr_date, status FROM products WHERE id = ? ";
+            $query = "SELECT id, name, description, price, manu_date, expr_date, status,pimage FROM products WHERE id = ? ";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -101,6 +102,7 @@ function validateDate($date, $format = 'Y-n-j')
             $manu_date = $row['manu_date'];
             $expr_date = $row['expr_date'];
             $status = $row['status'];
+            $pimage = $row['pimage'];
         }
 
         // show error
@@ -145,30 +147,31 @@ function validateDate($date, $format = 'Y-n-j')
                 }
 
                 $expr_date = $_POST['expr_date_year'] . "-" . $_POST['expr_date_month'] . "-" . $_POST['expr_date_day'];
-                $dateManu = date_create($manu_date);
-                $dateExpr = date_create($expr_date);
-                $x = date_diff($dateManu, $dateExpr);
-                var_dump($x);
-                var_dump((int)($x->format("%R%a")));
-
+                $dateM = date_create($manu_date);
+                $dateE = date_create($expr_date);
+                $x = date_diff($dateM, $dateE);
+                // var_dump((int)($x->format("%m")));
+                // var_dump((int)($x->format("%R%a")));
                 if (validateDate($expr_date) == false) {
                     $msg = $msg . "Expiry date selected is not exist<br>";
                     $save = false;
-                } else if ($x->format("%m") >= 1) {
-                    if((int)($x->format("%R%a") <= 0)) {
-                        $msg = $msg . "Expiry date should not earlier than manufacture date<br>";
+                }
+                if ((int)($x->format("%m") >= 1)) {
+                    if ((int)($x->format("%R%a") <= 0)) {
+                        $msg = $msg . "Expiry date should not earlier than manufacture date fffff<br>";
                         $save = false;
                     }
-                    
-                } else if ($x->format("%m") < 1 ){
-                    $msg = $msg . "Expiry date should not earlier than manufacture date<br>";
+                } elseif ((int)($x->format("%m") < 1)) {
+                    $msg = $msg . "Expiry date should not earlier than manufacture date vvvvv<br>";
                     $save = false;
                 }
+
+
 
                 //status check//
                 if (isset($_POST['status'])) {
                     $status = htmlspecialchars(strip_tags($_POST['status']));
-                }else {
+                } else {
                     $msg = $msg . "Please do not leave status empty<br>";
                     $save = false;
                 }
@@ -176,7 +179,13 @@ function validateDate($date, $format = 'Y-n-j')
                 // write update query
                 // in this case, it seemed like we have so many fields to pass and
                 // it is better to label them and not use question marks
-                $query = "UPDATE products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status WHERE id = :id";
+                $query = "UPDATE products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status,pimage=:pimage WHERE id =:id";
+
+                // new 'image' field
+                $pimage = !empty($_FILES["pimage"]["name"])
+                    ? sha1_file($_FILES['pimage']['tmp_name']) . "-" . basename($_FILES["pimage"]["name"])
+                    : "";
+                $pimage = htmlspecialchars(strip_tags($pimage));
 
                 $stmt = $con->prepare($query);
                 $stmt->bindParam(':name', $name);
@@ -186,12 +195,76 @@ function validateDate($date, $format = 'Y-n-j')
                 $stmt->bindParam(':expr_date', $expr_date);
                 $stmt->bindParam(':status', $status);
                 $stmt->bindParam(':id', $id);
-              
+                $stmt->bindParam(':pimage', $pimage);
+
+                // Execute the query
+                if ($stmt->execute()) {
+                    ob_end_clean();
+                    $_SESSION['success_update'] = "<div class='alert alert-success text-white'>Record was Updated.</div>";
+                    header('Location: product_read.php');
+
+                    if ($pimage) {
+                        $target_directory = "uploads/";
+                        // make sure the 'uploads' folder exists
+                        // if not, create it
+                        if (!is_dir($target_directory)) {
+                            mkdir($target_directory, 0777, true);
+                        }
+                        $target_file = $target_directory . $pimage;
+
+                        // make sure file does not exist
+                        if (file_exists($target_file)) {
+                            $file_upload_error_messages .= "<div>Image already exists. Try to change file name.</div>";
+                        }
+
+                        // check the extension of the upload file
+                        $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
+                        // make sure certain file types are allowed
+                        $allowed_file_types = array("jpg", "jpeg", "png", "gif");
+                        if (!in_array($file_type, $allowed_file_types)) {
+                            $file_upload_error_messages .= "<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                        }
+                        // make sure submitted file is not too large
+                        if ($_FILES['pimage']['size'] > 1024000) {
+                            $file_upload_error_messages .= "<div>Image must be less than 1 MB in size.</div>";
+                        }
+                        // make sure the 'uploads' folder exists
+                        // if not, create it
+                        if (!is_dir($target_directory)) {
+                            mkdir($target_directory, 0777, true);
+                        }
+                        // if $file_upload_error_messages is still empty
+                        if (empty($file_upload_error_messages)) {
+                            // it means there are no errors, so try to upload the file
+                            if (move_uploaded_file($_FILES["pimage"]["tmp_name"], $target_file)) {
+                                // it means photo was uploaded
+                            } else {
+                                echo "<div class='alert alert-danger text-white'>";
+                                echo "<div>Unable to upload photo.</div>";
+                                echo "<div>Update the record to upload photo.</div>";
+                                echo "</div>";
+                            }
+                        }
+                        // if $file_upload_error_messages is NOT empty
+                        else {
+                            // it means there are some errors, so show them to user
+                            echo "<div class='alert alert-danger text-white'>";
+                            echo "<div>{$file_upload_error_messages}</div>";
+                            echo "<div>Update the record to upload photo.</div>";
+                            echo "</div>";
+                        }
+                    } else {
+                        echo "no file selected.";
+                    }
+                } else {
+                    echo "<div class='alert alert-danger text-white'>Unable to update record. Please try again.</div>";
+                }
+
                 if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";
                     $stmt->execute();
                 } else {
-                    echo "<div class='alert alert-danger'>Unable to save record:<br>$msg</div>";
+                    echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
                 }
             }
             // show errors
@@ -202,7 +275,7 @@ function validateDate($date, $format = 'Y-n-j')
 
 
         <!--we have our html form here where new record information can be updated-->
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Name</td>
@@ -220,10 +293,10 @@ function validateDate($date, $format = 'Y-n-j')
                     <td>Manufacture date </td>
                     <td>
                         <?php
-                        
-                        $yearsave_manu = substr($manu_date,0,4);
-                        $monthsave_manu = substr($manu_date,5,2);
-                        $daysave_manu = substr($manu_date,8,2);
+
+                        $yearsave_manu = substr($manu_date, 0, 4);
+                        $monthsave_manu = substr($manu_date, 5, 2);
+                        $daysave_manu = substr($manu_date, 8, 2);
                         //echo $row['manu_date'];
                         //echo $manu_date;
                         dropdown($sday = $daysave_manu, $smonth = $monthsave_manu, $syear = $yearsave_manu, $datetype = "manu_date");
@@ -234,10 +307,10 @@ function validateDate($date, $format = 'Y-n-j')
                 <tr>
                     <td>Expiry date</td>
                     <td>
-                        <?php 
-                        $yearsave_expr = substr($expr_date,0,4);
-                        $monthsave_expr = substr($expr_date,5,2);
-                        $daysave_expr = substr($expr_date,8,2);
+                        <?php
+                        $yearsave_expr = substr($expr_date, 0, 4);
+                        $monthsave_expr = substr($expr_date, 5, 2);
+                        $daysave_expr = substr($expr_date, 8, 2);
                         //echo $row['expr_date'];
                         dropdown($sday = $daysave_expr, $smonth = $monthsave_expr, $syear = $yearsave_expr, $datetype = "expr_date");
                         ?>
@@ -246,9 +319,13 @@ function validateDate($date, $format = 'Y-n-j')
                 <tr>
                     <td>Status</td>
                     <td>
-                        <input type="radio" name="status" value="available" <?php if($status == "available") echo 'checked'; ?>><label>Available</label>&nbsp;
+                        <input type="radio" name="status" value="available" <?php if ($status == "available") echo 'checked'; ?>><label>Available</label>&nbsp;
                         <input type="radio" name="status" value="not_available" <?php if ($status == "not_available") echo 'checked'; ?>><label>Not Available</label>
                     </td>
+                </tr>
+                <tr>
+                    <td>Photo</td>
+                    <td><input type="file" name="pimage" /></td>
                 </tr>
                 <tr>
                     <td></td>

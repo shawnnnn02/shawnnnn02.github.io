@@ -131,14 +131,14 @@ function validateDate($date, $format = 'Y-n-j')
             }
 
             // new 'image' field
-            $image = !empty($_FILES["pimage"]["name"])
+            $pimage = !empty($_FILES["pimage"]["name"])
                 ? sha1_file($_FILES['pimage']['tmp_name']) . "-" . basename($_FILES["pimage"]["name"])
                 : "";
-            $image = htmlspecialchars(strip_tags($image));
-            if ($image) {
+            $pimage = htmlspecialchars(strip_tags($pimage));
+            if ($pimage) {
 
                 $target_directory = "uploads/";
-                $target_file = $target_directory . $image;
+                $target_file = $target_directory . $pimage;
                 $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
 
                 // error message is empty
@@ -187,7 +187,7 @@ function validateDate($date, $format = 'Y-n-j')
             include 'config/database.php';
             try {
                 // insert query
-                $query = "INSERT INTO products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status, image=:image, created=:created";
+                $query = "INSERT INTO products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status, pimage=:pimage, created=:created";
                 // prepare query for execution
                 $stmt = $con->prepare($query);
 
@@ -198,17 +198,10 @@ function validateDate($date, $format = 'Y-n-j')
                 $stmt->bindParam(':manu_date', $manu_date);
                 $stmt->bindParam(':expr_date', $expr_date);
                 $stmt->bindParam(':status', $status);
-                $stmt->bindParam(':image', $image);
+                $stmt->bindParam(':pimage', $pimage);
                 // specify when this record was inserted to the database
                 $created = date('Y-m-d H:i:s');
                 $stmt->bindParam(':created', $created);
-
-                // Execute the query
-                // if (!empty($stmt->execute())) {
-                //     echo "<div class='alert alert-success'>Record was saved.</div>";
-                // }else {
-                //     echo "<div class='alert alert-danger'>Unable to save record.</div>";
-                // }
 
                 if ($save != false) {
                     echo "<div class='alert alert-success'>Record was saved.</div>";

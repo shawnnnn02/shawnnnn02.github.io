@@ -20,11 +20,12 @@
         <?php
         // include database connection
         include 'config/database.php';
+        include 'function/function.php';
 
         // delete message prompt will be here
 
         // select all data
-        $query = "SELECT id, name, description, price, image FROM products ORDER BY id DESC";
+        $query = "SELECT id, name, description, price, pimage FROM products ORDER BY id DESC";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
@@ -63,7 +64,7 @@
                 echo "<td>{$name}</td>";
                 echo "<td>{$description}</td>";
                 echo "<td>{$price}</td>";
-                echo "<td><img src = 'uploads/{$image}' width='50' height='50' </td>";
+                echo "<td>" . pro_img($pimage) . "</td>";
                 echo "<td>";
                 // read one record
                 echo "<a href='product_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";
@@ -72,12 +73,10 @@
                 echo "<a href='product_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_user({$id});'  class='btn btn-danger'>Delete</a>";
+                echo "<a href='#' onclick='product_delete({$id});'  class='btn btn-danger'>Delete</a>";
                 echo "</td>";
                 echo "</tr>";
             }
-
-
             // end table
             echo "</table>";
         }
@@ -86,7 +85,18 @@
             echo "<div class='alert alert-danger'>No records found.</div>";
         }
         ?>
+        <script>
+            // confirm record deletion
+            function product_delete(id) {
 
+                var answer = confirm('Are you sure?');
+                if (answer) {
+                    // if user clicked ok,
+                    // pass the id to delete.php and execute the delete query
+                    window.location = 'product_delete.php?id=' + id;
+                }
+            }
+        </script>
 
 
     </div> <!-- end .container -->

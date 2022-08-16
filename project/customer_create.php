@@ -121,8 +121,8 @@ function validateDate($date, $format = 'Y-n-d')
             if (empty($confirmpassd)) {
                 $msg = $msg . "Please do not leave confirm password empty<br>";
                 $save = false;
-            }elseif ($confirmpassd != $passd){
-                $msg = $msg ."Password must be same with confirm password";
+            } elseif ($confirmpassd != $passd) {
+                $msg = $msg . "Password must be same with confirm password";
                 $save = false;
             }
 
@@ -159,13 +159,66 @@ function validateDate($date, $format = 'Y-n-d')
                 $msg = $msg . "Please do not leave status empty<br>";
                 $save = false;
             }
+            // new 'image' field
+            $user_image = !empty($_FILES["user_image"]["name"])
+                ? sha1_file($_FILES['user_image']['tmp_name']) . "-" . basename($_FILES["user_image"]["name"])
+                : "";
+            $user_image = htmlspecialchars(strip_tags($user_image));
 
+            if ($user_image) {
+
+                $target_directory = "uploads/";
+                $target_file = $target_directory . $user_image;
+                $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
+
+                // error message is empty
+                $file_upload_error_messages = "";
+
+                // make sure certain file types are allowed
+                $allowed_file_types = array("jpg", "jpeg", "png", "gif");
+                if (!in_array($file_type, $allowed_file_types)) {
+                    $file_upload_error_messages .= "<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                }
+                // make sure file does not exist
+                if (file_exists($target_file)) {
+                    $file_upload_error_messages .= "<div>Image already exists. Try to change file name.</div>";
+                }
+                // make sure submitted file is not too large, can't be larger than 1MB
+                if ($_FILES['user_image']['size'] > 1024000) {
+                    $file_upload_error_messages .= "<div>Image must be less than 1 MB in size.</div>";
+                }
+                // make sure the 'uploads' folder exists
+                // if not, create it
+                if (!is_dir($target_directory)) {
+                    mkdir($target_directory, 0777, true);
+                }
+            }
+            // if $file_upload_error_messages is still empty
+            if (empty($file_upload_error_messages)) {
+                // it means there are no errors, so try to upload the file
+                if (move_uploaded_file($_FILES["user_image"]["tmp_name"], $target_file)) {
+                    // it means photo was uploaded
+                } else {
+                    echo "<div class='alert alert-danger'>";
+                    echo "<div>Unable to upload photo.</div>";
+                    echo "<div>Update the record to upload photo.</div>";
+                    echo "</div>";
+                }
+            } // if $file_upload_error_messages is NOT empty
+            else {
+                // it means there are some errors, so show them to user
+                echo "<div class='alert alert-danger'>";
+                echo "<div>{$file_upload_error_messages}</div>";
+                echo "<div>Update the record to upload photo.</div>";
+                echo "</div>";
+            }
 
             // include database connection
             include 'config/database.php';
+            include 'function/function.php';
             try {
                 // insert query
-                $query = "INSERT INTO customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, confirmpassd=:confirmpassd, birth_date=:birth_date, gender=:gender, status=:status, created=:created";
+                $query = "INSERT INTO customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, confirmpassd=:confirmpassd, birth_date=:birth_date, gender=:gender, status=:status, user_image=:user_image, created=:created";
                 // prepare query for execution
                 $stmt = $con->prepare($query);
 
@@ -178,6 +231,7 @@ function validateDate($date, $format = 'Y-n-d')
                 $stmt->bindParam(':birth_date', $birth_date);
                 $stmt->bindParam(':gender', $gender);
                 $stmt->bindParam(':status', $status);
+                $stmt->bindParam(':user_image', $user_image);
 
                 // specify when this record was inserted to the database
                 $created = date('Y-m-d H:i:s');
@@ -198,7 +252,7 @@ function validateDate($date, $format = 'Y-n-d')
         ?>
 
         <!-- html form here where the product information will be entered -->
-        <form name="customer" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return validateForm()" method="post" required>
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>First Name</td>
@@ -244,6 +298,11 @@ function validateDate($date, $format = 'Y-n-d')
                         <input type="radio" name="status" value="deactive" <?php if (isset($_POST["status"]) && ($status == "deactive")) echo 'checked'; ?>><label>Deactive</label>
                     </td>
                 </tr>
+                <tr>
+                    <td>Profile Image</td>
+                    <td><input type="file" name="user_image" /></td>
+                </tr>
+
                 <tr>
                     <td></td>
                     <td>

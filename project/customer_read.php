@@ -19,6 +19,7 @@
         <?php
         // include database connection
         include 'config/database.php';
+        include 'function/function.php';
 
         // delete message prompt will be here
         // if it was redirected from delete.php
@@ -31,7 +32,7 @@
 
 
         // select all data
-        $query = "SELECT id, firstname, lastname, email, status FROM customer ORDER BY id DESC";
+        $query = "SELECT id, firstname, lastname, email, status, user_image FROM customer ORDER BY id DESC";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
@@ -55,6 +56,7 @@
             echo "<th>Lastname</th>";
             echo "<th>Email</th>";
             echo "<th>Status</th>";
+            echo "<th>Image</th>";
             echo "<th>Action</th>";
             echo "</tr>";
 
@@ -71,6 +73,7 @@
                 echo "<td>{$lastname}</td>";
                 echo "<td>{$email}</td>";
                 echo "<td>{$status}</td>";
+                echo "<td>" . user_img($user_image) . "</td>";
                 echo "<td>";
                 // read one record
                 echo "<a href='customer_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";

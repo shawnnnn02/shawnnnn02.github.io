@@ -18,6 +18,12 @@ try {
     }else{
         die('Unable to delete record.');
     }
+    $path = "uploads/$user_image";
+    if(!unlink($path)) {
+        echo "You have an error";
+    } else {
+        header("Location: customer_read.php?deleteSuccess");
+    }
 }
 // show error
 catch(PDOException $exception){

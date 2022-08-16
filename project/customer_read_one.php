@@ -7,8 +7,9 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
+
 <body>
- 
+
     <!-- container -->
     <div class="container">
         <div class="page-header">
@@ -23,11 +24,12 @@
 
         //include database connection
         include 'config/database.php';
+        include 'function/function.php';
 
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, firstname, lastname, email, passd, birth_date, gender, status FROM customer WHERE id = ? ";
+            $query = "SELECT id, firstname, lastname, email, passd, birth_date, gender, status, user_image FROM customer WHERE id = ? ";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -47,6 +49,7 @@
             $birth_date = $row['birth_date'];
             $gender = $row['gender'];
             $status = $row['status'];
+            $user_image = $row['user_image'];
         }
 
         // show error
@@ -87,6 +90,10 @@
                 <td><?php echo htmlspecialchars($status, ENT_QUOTES);  ?></td>
             </tr>
             <tr>
+                <td>Photo</td>
+                <td><?php echo " " .user_img($user_image) . " " ?></td>
+            </tr>
+            <tr>
                 <td></td>
                 <td>
                     <a href='customer_read.php' class='btn btn-danger'>Back to customer list</a>
@@ -96,6 +103,6 @@
 
     </div> <!-- end .container -->
 
-    </body>
+</body>
 
 </html>

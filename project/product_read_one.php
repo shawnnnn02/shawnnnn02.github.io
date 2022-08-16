@@ -26,11 +26,12 @@
 
         //include database connection
         include 'config/database.php';
+        include 'function/function.php';
 
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, name, description, price, manu_date, expr_date, status FROM products WHERE id = ? ";
+            $query = "SELECT id, name, description, price, manu_date, expr_date, status, pimage FROM products WHERE id = ? ";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
@@ -49,6 +50,7 @@
             $manu_date = $row['manu_date'];
             $expr_date = $row['expr_date'];
             $status = $row['status'];
+            $pimage = $row['pimage'];
         }
 
         // show error
@@ -87,6 +89,11 @@
                 <td>Status</td>
                 <td><?php echo htmlspecialchars($status, ENT_QUOTES);  ?></td>
             </tr>
+            <tr>
+                <td>Images</td>
+                <td><?php echo " ". pro_img($pimage) . " "?></td>
+            </tr>
+
             <tr>
                 <td></td>
                 <td>
