@@ -74,7 +74,7 @@ function validateDate($date, $format = 'Y-n-j')
         <?php
         // get passed parameter value, in this case, the record ID
         // isset() is a PHP function used to verify if a value is there or not
-        $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
+        $productID = isset($_GET['productID']) ? $_GET['productID'] : die('ERROR: Record ID not found.');
 
         //include database connection
         include 'config/database.php';
@@ -83,11 +83,11 @@ function validateDate($date, $format = 'Y-n-j')
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, name, description, price, manu_date, expr_date, status,pimage FROM products WHERE id = ? ";
+            $query = "SELECT productID, name, description, price, manu_date, expr_date, status,pimage FROM products WHERE productID = ? ";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
-            $stmt->bindParam(1, $id);
+            $stmt->bindParam(1, $productID);
 
             // execute our query
             $stmt->execute();
@@ -179,7 +179,7 @@ function validateDate($date, $format = 'Y-n-j')
                 // write update query
                 // in this case, it seemed like we have so many fields to pass and
                 // it is better to label them and not use question marks
-                $query = "UPDATE products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status,pimage=:pimage WHERE id =:id";
+                $query = "UPDATE products SET name=:name, description=:description, price=:price, manu_date=:manu_date, expr_date=:expr_date, status=:status,pimage=:pimage WHERE productID =:productID";
 
                 // new 'image' field
                 $pimage = !empty($_FILES["pimage"]["name"])
@@ -194,13 +194,13 @@ function validateDate($date, $format = 'Y-n-j')
                 $stmt->bindParam(':manu_date', $manu_date);
                 $stmt->bindParam(':expr_date', $expr_date);
                 $stmt->bindParam(':status', $status);
-                $stmt->bindParam(':id', $id);
+                $stmt->bindParam(':productID', $productID);
                 $stmt->bindParam(':pimage', $pimage);
 
                 // Execute the query
                 if ($stmt->execute()) {
-                    ob_end_clean();
-                    $_SESSION['success_update'] = "<div class='alert alert-success text-white'>Record was Updated.</div>";
+                    
+                    $_SESSION['success_update'] = "<div>Record was Updated.</div>";
                     header('Location: product_read.php');
 
                     if ($pimage) {
@@ -275,7 +275,7 @@ function validateDate($date, $format = 'Y-n-j')
 
 
         <!--we have our html form here where new record information can be updated-->
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post" enctype="multipart/form-data">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?productID={$productID}"); ?>" method="post" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>Name</td>

@@ -32,7 +32,7 @@
 
 
         // select all data
-        $query = "SELECT id, firstname, lastname, email, status, user_image FROM customer ORDER BY id DESC";
+        $query = "SELECT customerID, firstname, lastname, email, status, user_image FROM customer ORDER BY customerID DESC";
         $stmt = $con->prepare($query);
         $stmt->execute();
 
@@ -68,7 +68,7 @@
                 extract($row);
                 // creating new table row per record
                 echo "<tr>";
-                echo "<td>{$id}</td>";
+                echo "<td>{$customerID}</td>";
                 echo "<td>{$firstname}</td>";
                 echo "<td>{$lastname}</td>";
                 echo "<td>{$email}</td>";
@@ -76,13 +76,13 @@
                 echo "<td>" . user_img($user_image) . "</td>";
                 echo "<td>";
                 // read one record
-                echo "<a href='customer_read_one.php?id={$id}' class='btn btn-info m-r-1em'>Read</a>";
+                echo "<a href='customer_read_one.php?customerID={$customerID}' class='btn btn-info m-r-1em'>Read</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='customer_update.php?id={$id}' class='btn btn-primary m-r-1em'>Edit</a>";
+                echo "<a href='customer_update.php?customerID={$customerID}' class='btn btn-primary m-r-1em'>Edit</a>";
 
                 // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_user({$id});' class='btn btn-danger'>Delete</a>";
+                echo "<a href='#' onclick='delete_user({$customerID});' class='btn btn-danger'>Delete</a>";
                 echo "</td>";
                 echo "</tr>";
             }
@@ -101,13 +101,13 @@
 
     <script>
         // confirm record deletion
-        function delete_user(id) {
+        function delete_user(customerID) {
 
             var answer = confirm('Are you sure?');
             if (answer) {
                 // if user clicked ok,
                 // pass the id to delete.php and execute the delete query
-                window.location = 'delete_user.php?id=' + id;
+                window.location = 'delete_user.php?customerID=' + customerID;
             }
         }
     </script>

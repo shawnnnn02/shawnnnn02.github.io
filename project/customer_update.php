@@ -74,7 +74,7 @@ function validateDate($date, $format = 'Y-n-j')
         <?php
         // get passed parameter value, in this case, the record ID
         // isset() is a PHP function used to verify if a value is there or not
-        $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
+        $customerID = isset($_GET['customerID']) ? $_GET['customerID'] : die('ERROR: Record ID not found.');
 
         //include database connection
         include 'config/database.php';
@@ -82,11 +82,11 @@ function validateDate($date, $format = 'Y-n-j')
         // read current record's data
         try {
             // prepare select query
-            $query = "SELECT id, firstname, lastname, email, passd, birth_date, gender, status FROM customer WHERE id = ? ";
+            $query = "SELECT customerID, firstname, lastname, email, passd, birth_date, gender, status FROM customer WHERE customerID = ? ";
             $stmt = $con->prepare($query);
 
             // this is the first question mark
-            $stmt->bindParam(1, $id);
+            $stmt->bindParam(1, $customerID);
 
             // execute our query
             $stmt->execute();
@@ -190,7 +190,7 @@ function validateDate($date, $format = 'Y-n-j')
             // write update query
             // in this case, it seemed like we have so many fields to pass and
             // it is better to label them and not use question marks
-            $query = "UPDATE customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, confirmpassd=:confirmpassd, birth_date=:birth_date, gender=:gender, status=:status, user_image=:user_image WHERE id =:id";
+            $query = "UPDATE customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, confirmpassd=:confirmpassd, birth_date=:birth_date, gender=:gender, status=:status, user_image=:user_image WHERE customerID =:customerID";
 
             // new 'image' field
             $user_image = !empty($_FILES["user_image"]["name"])
@@ -207,13 +207,12 @@ function validateDate($date, $format = 'Y-n-j')
             $stmt->bindParam(':birth_date', $birth_date);
             $stmt->bindParam(':gender', $gender);
             $stmt->bindParam(':status', $status);
-            $stmt->bindParam(':id', $id);
+            $stmt->bindParam(':customerID', $customerID);
             $stmt->bindParam(':user_image', $user_image);
 
             // Execute the query
             if ($stmt->execute()) {
-                ob_end_clean();
-                $_SESSION['success_update'] = "<div class='alert alert-success text-white'>Record was Updated.</div>";
+                $_SESSION['success_update'] = "<div>Record was Updated.</div>";
                 header('Location: customer_read.php');
 
                 if ($user_image) {
@@ -288,7 +287,7 @@ function validateDate($date, $format = 'Y-n-j')
 
 
         <!--we have our html form here where new record information can be updated-->
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}"); ?>" method="post" enctype="multipart/form-data">
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?customerID={$customerID}"); ?>" method="post" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
                 <tr>
                     <td>First Name</td>

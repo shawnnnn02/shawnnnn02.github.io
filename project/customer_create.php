@@ -216,6 +216,7 @@ function validateDate($date, $format = 'Y-n-d')
             // include database connection
             include 'config/database.php';
             include 'function/function.php';
+            
             try {
                 // insert query
                 $query = "INSERT INTO customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, confirmpassd=:confirmpassd, birth_date=:birth_date, gender=:gender, status=:status, user_image=:user_image, created=:created";
