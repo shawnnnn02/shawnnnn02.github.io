@@ -337,7 +337,7 @@ function validateDate($date, $format = 'Y-n-j')
                 </tr>
                 <tr>
                     <td>Photo</td>
-                    <td><input type="file" name="user_image" /></td>
+                    <td><input type="file" name="user_image"/></td>
                 </tr>
                 <tr>
                     <td></td>

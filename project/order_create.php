@@ -10,7 +10,7 @@
     <div class="container">
         
         <div class="page-header">
-            <h1>Create An Orders</h1>
+            <h1>Create Orders</h1>
         </div>
 
         <?php
@@ -65,7 +65,7 @@
 
         <!-- html form here where the product information will be entered -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
-                <table class='table table-hover table-bordered'>
+            <table class='table table-hover table-responsive table-bordered'>
                         <?php
                         $query = "SELECT customerID, email FROM customer";
                         $stmt = $con->prepare($query);
@@ -89,7 +89,7 @@
 
                             // execute our query
                             $stmt->execute();
-                            echo '<tr class="productrow border">
+                            echo '<tr class="productrow">
                                 <td>Select Product</td>
                                 <td>
                                 <div class="col">';
@@ -124,7 +124,7 @@
             </div>
 
             <div>
-                <input type='submit' value='Save Changes' class='btn btn-primary' />
+                <input type='submit' value='Save Changes' class='btn btn-primary'/>
             </div>
         </form>
 
