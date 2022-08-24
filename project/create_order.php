@@ -5,6 +5,35 @@
     <title>Create Order</title>
 </head>
 
+<?php 
+    include 'config/database.php';
+
+    if($_POST){
+        $product_id =$_POST['product'];
+
+            $name = ($_POST['name']);
+            
+
+
+        try {
+            // insert query
+            $query = "INSERT INTO order_summary SET customerID=:customerID";
+            // prepare query for execution
+            $stmt = $con->prepare($query);
+            $stmt->bindParam(1, $customerID);
+            
+            $stmt->execute();
+            
+            }
+            // show error
+            catch (PDOException $exception) {
+                die('ERROR: ' . $exception->getMessage());
+            }
+    }
+
+    
+    
+?>
 <body>
     <form action="" method="post">
         <table class="table">
@@ -13,7 +42,25 @@
                 <td>
                     <div class="row">
                         <div class="col">
-                            <input type="text" name="product[]" />
+                        <?php   
+                            $query = "SELECT productID, name FROM products ORDER BY productID DESC";
+                            $stmt = $con->prepare($query);
+                            $stmt->execute();
+
+                            // this is how to get number of rows returned
+                            $product_num = $stmt->rowCount();
+                            if($product_num > 0){
+                                echo '<select name="product">';
+                                    while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                                        extract($row);
+                                        echo "<option value='$productID'>$name</option>";
+                                    }
+                                    echo $name;
+                                echo '</select>';
+                            }
+                            
+                               
+                        ?>
                         </div>
                         <div class="col">
                             <select name="quantity[]">
@@ -33,40 +80,37 @@
                     </div>
                 </td>
             </tr>
+            <tr><td><input type="text" name="name"></td></tr>
             <tr>
                 <td colspan="2">
                     <div class="d-flex justify-content-center flex-column flex-lg-row">
                         <div class="d-flex justify-content-center">
                             <button type="button" class="add_one btn mb-1 mx-2">Add More Product</button>
                             <button type="button" class="del_last btn mb-1 mx-2">Delete Last Product</button>
+
                             <button type="submit">Submit</button>
                         </div>
                     </div>
                 </td>
             </tr>
+
         </table>
 
     </form>
 
     <?php
-    if($_POST){
-    $product = $_POST['product'];
-    $quantity = $_POST['quantity'];
-    /*
-    foreach ($product as $pro) {
-        echo "$pro<br>";
-    }
-    foreach ($quantity as $quan) {
-        echo "$quan <br>";
-    }
-    */
-    for($i = 0; $i < count($product); $i++){
-        echo "$product[$i]";
-        echo "$quantity[$i]";
-        echo "<br>";
-    }
-}
-    ?>
+
+        //if($_POST){
+           // $product = $_POST['product'];
+            //$quantity = $_POST['quantity'];
+        
+           // for($i=0;$i<count($product);$i++){
+           //     echo $product[$i];
+           //     echo $quantity[$i];
+           //     echo "<br>";
+            //}
+        //}
+     ?>
 
     <script>
         document.addEventListener('click', function(event) {
