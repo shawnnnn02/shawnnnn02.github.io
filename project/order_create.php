@@ -18,9 +18,9 @@
         <?php
         // include database connection
         include 'config/database.php';
-        
+
         // define variables and set to empty values
-        
+
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // posted values
@@ -42,7 +42,7 @@
                             $stmt->bindParam(1, $customerID);
                             // Execute the query
                             if ($stmt->execute()) {
-                                
+
                                 $_SESSION['success'] = "<div>Orders was created.</div>";
                                 $last_order_id = $con->lastInsertId();
                                 if ($last_order_id > 0) {
@@ -66,7 +66,7 @@
                                         }
                                     }
                                 }
-                                
+
                                 echo "<div class='alert alert-success'>Record was saved.</div>";
                             } else {
                                 echo "<div class='alert alert-danger'>Unable to save record.</div>";
@@ -90,67 +90,71 @@
         <!-- html form here where the product information will be entered -->
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
             <table class='table table-hover table-responsive table-bordered'>
-                        <?php
-                        $query = "SELECT customerID, email FROM customer";
-                        $stmt = $con->prepare($query);
-                        // execute our query
-                        $stmt->execute();
-                        echo '<tr class="border">
+                <?php
+                $query = "SELECT customerID, email FROM customer";
+                $stmt = $con->prepare($query);
+                // execute our query
+                $stmt->execute();
+                echo '<tr class="border">
                             <td>Select Email</td>
                             <td>
                             <div class="col">';
-                        echo "<select class='form_select' name='customerID' >";
-                        echo '<option value="">Email</option>';
-                        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                            extract($row);
-                            echo "<option value='" . $customerID . "' >" . $email . "</option>";
-                        }
+                echo "<select class='form_select' name='customerID' >";
+                echo '<option value="">Email</option>';
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    extract($row);
+                    echo "<option value='" . $customerID . "' >" . $email . "</option>";
+                }
 
-                        try {
-                            // prepare select query
-                            $query = "SELECT * FROM products";
-                            $stmt = $con->prepare($query);
+                try {
+                    // prepare select query
+                    $query = "SELECT * FROM products";
+                    $stmt = $con->prepare($query);
 
-                            // execute our query
-                            $stmt->execute();
-                            echo '<tr class="productrow">
+                    // execute our query
+                    $stmt->execute();
+                    echo '<tr class="productrow">
                                 <td>Select Product</td>
                                 <td>
                                 <div class="col">';
-                            echo '<select class="form_select" name="productID[]" >';
-                            echo '<option value="">Product</option>';
+                    echo '<select class="form_select" name="productID[]" >';
+                    echo '<option value="">Product</option>';
 
-                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                                extract($row);
-                                echo "<option value='" . $productID . "' >" . $name . "</option>";
-                            }
-                            echo "</select>
+                    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                        extract($row);
+                        echo "<option value='" . $productID . "' >" . $name . "</option>";
+                    }
+                    echo "</select>
                             <div>
                                 Quantity
                                 <input type='number' name='quantity[]' class='form-control' value='' /></div></td></tr>";
-                        }
-                        // show error
-                        catch (PDOException $exception) {
-                            die('ERROR: ' . $exception->getMessage());
-                        }
-                        ?>
+                }
+                // show error
+                catch (PDOException $exception) {
+                    die('ERROR: ' . $exception->getMessage());
+                }
+                ?>
 
 
-                    </div>
-                </table>
-            </div>
-            <div>
-                <div>
-                    <button type="button" class="add">Add More Product</button>
-                    <button type="button" class="del">Delete Last Product</button>
-                </div>
-            </div>
+    </div>
 
-            <div>
-                <input type='submit' value='Save Changes' class='btn btn-primary'/>
-                <a href='order_listing.php' class='btn btn-danger'>Back to Order List</a>
-            </div>
-        </form>
+    </div>
+    <div>
+        <div>
+            <button type="button" class="add">Add More Product</button>
+            <button type="button" class="del">Delete Last Product</button>
+        </div>
+    </div>
+
+    <tr>
+        <td></td>
+        <td>
+            <input type='submit' value='Save' class='btn btn-primary' />
+            <a href='order_listing.php' class='btn btn-danger'>Back to Order List</a>
+        </td>
+    </tr>
+    </table>
+    </form>
 
     </div>
     <!-- end .container -->
