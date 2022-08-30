@@ -42,16 +42,14 @@
                 if ($num > 0) {
                     echo "<table class='table table-hover table-responsive table-bordered'>";
 
-                    // create table head
-                    echo "<tr class='border border-3'>";
                     //echo "<th class='border border-3'>Order Details ID</th>";
-                    echo "<th class='border border-3'>Order ID</th>";
-                    echo "<th class='border border-3'>Username</th>";
-                    echo "<th class='border border-3'>Product ID</th>";
-                    echo "<th class='border border-3'>Product Name</th>";
-                    echo "<th class='border border-3'>Quantity</th>";
-                    echo "<th class='border border-3'>Price</th>";
-                    echo "<th class='border border-3'>Total Price</th>";
+                    echo "<th>Order ID</th>";
+                    echo "<th>Username</th>";
+                    echo "<th>Product ID</th>";
+                    echo "<th>Product Name</th>";
+                    echo "<th>Quantity</th>";
+                    echo "<th>Price</th>";
+                    echo "<th>Total Price</th>";
                     echo "</tr>";
 
                     // retrieve table contents
@@ -60,15 +58,14 @@
                         extract($row);
                         // creating new table row per record
                         $totalprice = $quantity * $price;
-                        echo "<tr class='border border-3'>";
-                        //echo "<td class='border border-3'>{$orderDetailsID}</td>";
-                        echo "<td class='border border-3'>{$orderID}</td>";
-                        echo "<td class='border border-3'>{$username}</td>";
-                        echo "<td class='border border-3'>{$productID}</td>";
-                        echo "<td class='border border-3'>{$name}</td>";
-                        echo "<td class='border border-3'>{$quantity}</td>";
-                        echo "<td class='border border-3'>{$price}</td>";
-                        echo "<td class='border border-3 text-end'>" . number_format($totalprice, 2) . "</td>";
+
+                        echo "<td>{$orderID}</td>";
+                        echo "<td>{$username}</td>";
+                        echo "<td>{$productID}</td>";
+                        echo "<td>{$name}</td>";
+                        echo "<td>{$quantity}</td>";
+                        echo "<td>{$price}</td>";
+                        echo "<td>" . number_format($totalprice, 2) . "</td>";
                     }
 
                     // end table
