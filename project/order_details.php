@@ -42,7 +42,6 @@
                 if ($num > 0) {
                     echo "<table class='table table-hover table-responsive table-bordered'>";
 
-                    //echo "<th class='border border-3'>Order Details ID</th>";
                     echo "<th>Order ID</th>";
                     echo "<th>Username</th>";
                     echo "<th>Product ID</th>";
@@ -60,7 +59,7 @@
                         $totalprice = $quantity * $price;
 
                         echo "<td>{$orderID}</td>";
-                        echo "<td>{$username}</td>";
+                        echo "<td>{$firstname} {$lastname}</td>";
                         echo "<td>{$productID}</td>";
                         echo "<td>{$name}</td>";
                         echo "<td>{$quantity}</td>";
