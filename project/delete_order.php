@@ -1,20 +1,23 @@
 <?php
 // include database connection
 include 'config/database.php';
+try {
+    // get record ID
+    // isset() is a PHP function used to verify if a value is there or not
+    $orderID = isset($_GET['orderID']) ? $_GET['orderID'] :  die('ERROR: Record ID not found.');
 
-if ($num > 0) {
-    header('Location: order_listing.php?action=deleteerror');
-} else {
+    // delete query
+    $query = "DELETE FROM order_summary WHERE orderID = ?";
+    $stmt = $con->prepare($query);
+    $stmt->bindParam(1, $orderID);
 
-    try {
-        // get record ID
-        // isset() is a PHP function used to verify if a value is there or not
-        $orderID = isset($_GET['orderID']) ? $_GET['orderID'] :  die('ERROR: Record ID not found.');
-        // delete query
-        $query = "DELETE  FROM order_summary WHERE orderID = ?"; 
+    if ($stmt->execute()) {
+        // redirect to read records page and
+        // tell the user record was deleted
+        $query = "DELETE FROM order_details WHERE orderID = ?";
         $stmt = $con->prepare($query);
         $stmt->bindParam(1, $orderID);
-        
+
         if ($stmt->execute()) {
             // redirect to read records page and
             // tell the user record was deleted
@@ -22,9 +25,11 @@ if ($num > 0) {
         } else {
             die('Unable to delete record.');
         }
+    } else {
+        die('Unable to delete record.');
     }
-    // show error
-    catch (PDOException $exception) {
-        die('ERROR: ' . $exception->getMessage());
-    }
+}
+// show error
+catch (PDOException $exception) {
+    die('ERROR: ' . $exception->getMessage());
 }

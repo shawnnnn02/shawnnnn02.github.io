@@ -22,6 +22,7 @@
                 // connection
                 include 'config/database.php';
 
+
                 $orderID = isset($_GET['orderID']) ? $_GET['orderID'] : die('ERROR: Record User not found.');
 
                 //select query 
@@ -38,10 +39,14 @@
                 $stmt->bindParam(1, $orderID);
                 $stmt->execute();
                 $num = $stmt->rowCount();
+                $TotalAmount = 0;
 
                 if ($num > 0) {
                     echo "<table class='table table-hover table-responsive table-bordered'>";
 
+                    // create table head
+                    echo "<tr class='border border-3'>";
+                    //echo "<th class='border border-3'>Order Details ID</th>";
                     echo "<th>Order ID</th>";
                     echo "<th>Username</th>";
                     echo "<th>Product ID</th>";
@@ -56,7 +61,11 @@
 
                         extract($row);
                         // creating new table row per record
+
                         $totalprice = $quantity * $price;
+                        $TotalAmount = $TotalAmount + $totalprice;
+                        
+                        echo "<tr class='border border-3'>";
 
                         echo "<td>{$orderID}</td>";
                         echo "<td>{$firstname} {$lastname}</td>";
@@ -72,11 +81,20 @@
                 } else {
                     echo "<div class='alert alert-danger text-white'>No Records Found.</div>";
                 }
+
                 ?>
+
+                <table class='table table-hover table-responsive table-bordered'>
+                    <tr>
+                        <td><b>Total Amount</b></td>
+                        <?php echo "<td>" . number_format($TotalAmount, 2) . "</td>"; ?>
+                    </tr>
+                </table>
             </table>
         </div>
-        <div>
-            <a href='order_listing.php' class='btn btn-danger'>Back to Order Lists</a>
+        <div class="d-flex justify-content-end gap-2">
+            <td class="d-flex justify-content-end gap-2">
+                <a href='order_listing.php' class='btn btn-danger'>Back to Order Lists</a>
         </div>
 
     </div>
