@@ -62,11 +62,15 @@ function validateDate($date, $format = 'Y-n-j')
     <!-- Latest compiled and minified Bootstrap CSS -->
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <?php
+    include 'head/head.php';
+    ?>
 </head>
 
 <body>
     <!-- container-->
     <div class="container">
+        <?php include 'navbar/navbar.php'; ?>
         <div class="page-header">
             <h1>Update Customer</h1>
         </div>
@@ -115,12 +119,10 @@ function validateDate($date, $format = 'Y-n-j')
         <?php
         // check if form was submitted
         $save = true;
-
         if (!empty($_POST)) {
             // posted values
-
+            //name check//
             $msg = "";
-
             $firstname = htmlspecialchars(strip_tags($_POST['firstname']));
             if (empty($firstname)) {
                 $msg = $msg . "Please do not leave firstname empty<br>";
@@ -132,6 +134,7 @@ function validateDate($date, $format = 'Y-n-j')
                 $save = false;
             }
 
+            //email//
             $email = htmlspecialchars(strip_tags($_POST['email']));
             if (empty($email)) {
                 $msg = $msg . "Please do not leave email empty<br>";
@@ -186,91 +189,75 @@ function validateDate($date, $format = 'Y-n-j')
                 $msg = $msg . "Please do not leave status empty<br>";
                 $save = false;
             }
-
-            // write update query
-            // in this case, it seemed like we have so many fields to pass and
-            // it is better to label them and not use question marks
-            $query = "UPDATE customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, confirmpassd=:confirmpassd, birth_date=:birth_date, gender=:gender, status=:status, user_image=:user_image WHERE customerID =:customerID";
-
             // new 'image' field
             $user_image = !empty($_FILES["user_image"]["name"])
                 ? sha1_file($_FILES['user_image']['tmp_name']) . "-" . basename($_FILES["user_image"]["name"])
                 : "";
             $user_image = htmlspecialchars(strip_tags($user_image));
 
+            if ($user_image) {
+
+                $target_directory = "uploads/";
+                $target_file = $target_directory . $user_image;
+                $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
+
+                // error message is empty
+                $file_upload_error_messages = "";
+
+                // make sure certain file types are allowed
+                $allowed_file_types = array("jpg", "jpeg", "png", "gif");
+                if (!in_array($file_type, $allowed_file_types)) {
+                    $file_upload_error_messages .= "<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                }
+                // make sure file does not exist
+                if (file_exists($target_file)) {
+                    $file_upload_error_messages .= "<div>Image already exists. Try to change file name.</div>";
+                }
+                // make sure submitted file is not too large, can't be larger than 1MB
+                if ($_FILES['user_image']['size'] > 1024000) {
+                    $file_upload_error_messages .= "<div>Image must be less than 1 MB in size.</div>";
+                }
+                // make sure the 'uploads' folder exists
+                // if not, create it
+                if (!is_dir($target_directory)) {
+                    mkdir($target_directory, 0777, true);
+                }
+            }
+            // if $file_upload_error_messages is still empty
+            if (empty($file_upload_error_messages)) {
+                // it means there are no errors, so try to upload the file
+                if (move_uploaded_file($_FILES["user_image"]["tmp_name"], $target_file)) {
+                    // it means photo was uploaded
+                } else {
+                    echo "<div class='alert alert-danger'>";
+                    echo "<div>Unable to upload photo.</div>";
+                    echo "<div>Update the record to upload photo.</div>";
+                    echo "</div>";
+                }
+            } // if $file_upload_error_messages is NOT empty
+            else {
+                // it means there are some errors, so show them to user
+                echo "<div class='alert alert-danger'>";
+                echo "<div>{$file_upload_error_messages}</div>";
+                echo "<div>Update the record to upload photo.</div>";
+                echo "</div>";
+            }
+
+            // write update query
+            // in this case, it seemed like we have so many fields to pass and
+            // it is better to label them and not use question marks
+            $query = "UPDATE customer SET firstname=:firstname, lastname=:lastname, email=:email, passd=:passd, birth_date=:birth_date, gender=:gender, status=:status, user_image=:user_image WHERE customerID =:customerID";
+
             $stmt = $con->prepare($query);
             $stmt->bindParam(':firstname', $firstname);
             $stmt->bindParam(':lastname', $lastname);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':passd', $passd);
-            $stmt->bindParam(':confirmpassd', $confirmpassd);
             $stmt->bindParam(':birth_date', $birth_date);
             $stmt->bindParam(':gender', $gender);
             $stmt->bindParam(':status', $status);
             $stmt->bindParam(':customerID', $customerID);
             $stmt->bindParam(':user_image', $user_image);
-
-            // Execute the query
-            if ($stmt->execute()) {
-                $_SESSION['success_update'] = "<div>Record was Updated.</div>";
-                header('Location: customer_read.php');
-
-                if ($user_image) {
-                    $target_directory = "uploads/";
-                    // make sure the 'uploads' folder exists
-                    // if not, create it
-                    if (!is_dir($target_directory)) {
-                        mkdir($target_directory, 0777, true);
-                    }
-                    $target_file = $target_directory . $user_image;
-
-                    // make sure file does not exist
-                    if (file_exists($target_file)) {
-                        $file_upload_error_messages .= "<div>Image already exists. Try to change file name.</div>";
-                    }
-
-                    // check the extension of the upload file
-                    $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
-                    // make sure certain file types are allowed
-                    $allowed_file_types = array("jpg", "jpeg", "png", "gif");
-                    if (!in_array($file_type, $allowed_file_types)) {
-                        $file_upload_error_messages .= "<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
-                    }
-                    // make sure submitted file is not too large
-                    if ($_FILES['user_image']['size'] > 1024000) {
-                        $file_upload_error_messages .= "<div>Image must be less than 1 MB in size.</div>";
-                    }
-                    // make sure the 'uploads' folder exists
-                    // if not, create it
-                    if (!is_dir($target_directory)) {
-                        mkdir($target_directory, 0777, true);
-                    }
-                    // if $file_upload_error_messages is still empty
-                    if (empty($file_upload_error_messages)) {
-                        // it means there are no errors, so try to upload the file
-                        if (move_uploaded_file($_FILES["user_image"]["tmp_name"], $target_file)) {
-                            // it means photo was uploaded
-                        } else {
-                            echo "<div class='alert alert-danger text-white'>";
-                            echo "<div>Unable to upload photo.</div>";
-                            echo "<div>Update the record to upload photo.</div>";
-                            echo "</div>";
-                        }
-                    }
-                    // if $file_upload_error_messages is NOT empty
-                    else {
-                        // it means there are some errors, so show them to user
-                        echo "<div class='alert alert-danger text-white'>";
-                        echo "<div>{$file_upload_error_messages}</div>";
-                        echo "<div>Update the record to upload photo.</div>";
-                        echo "</div>";
-                    }
-                } else {
-                    echo "no file selected.";
-                }
-            } else {
-                echo "<div class='alert alert-danger text-white'>Unable to update record. Please try again.</div>";
-            }
 
             if ($save != false) {
                 echo "<div class='alert alert-success'>Record was saved.</div>";
@@ -307,7 +294,7 @@ function validateDate($date, $format = 'Y-n-j')
                 </tr>
                 <tr>
                     <td>Confirm Password</td>
-                    <td><input type='text' name='confirmpassd' value="<?php if (isset($_POST['confirmpassd'])) echo $_POST['confirmpassd']; ?>" class='form-control' /></td>
+                    <td><input type='text' name='confirmpassd' class='form-control' value="<?php if (isset($_POST['confirmpassd'])) echo $_POST['confirmpassd']; ?>" /></td>
                 </tr>
                 <tr>
                     <td>Date of Birth </td>
@@ -316,6 +303,8 @@ function validateDate($date, $format = 'Y-n-j')
                         $yearsave_birth = substr($birth_date, 0, 4);
                         $monthsave_birth = substr($birth_date, 5, 2);
                         $daysave_birth = substr($birth_date, 8, 2);
+                        //echo $row['manu_date'];
+                        //echo $manu_date;
                         dropdown($sday = $daysave_birth, $smonth = $monthsave_birth, $syear = $yearsave_birth, $datetype = "birth_date");
                         ?>
                     </td>
@@ -336,8 +325,8 @@ function validateDate($date, $format = 'Y-n-j')
                     </td>
                 </tr>
                 <tr>
-                    <td>Photo</td>
-                    <td><input type="file" name="user_image"/></td>
+                    <td>Profile Image</td>
+                    <td><input type="file" name="user_image" /></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -352,6 +341,9 @@ function validateDate($date, $format = 'Y-n-j')
     </div>
     <!-- end .container -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <?php include 'footer/footer.php'; ?>
+    
 </body>
 
 </html>
