@@ -1,3 +1,12 @@
+<style>
+    .alineright{
+        text-align:right; 
+         float: right;
+         width:50%;
+         display:block;
+    }
+</style>
+
 <!DOCTYPE HTML>
 <html>
 
@@ -76,8 +85,8 @@
                         echo "<td>{$productID}</td>";
                         echo "<td>{$name}</td>";
                         echo "<td>{$quantity}</td>";
-                        echo "<td>{$price}</td>";
-                        echo "<td>" . number_format($totalprice, 2) . "</td>";
+                        echo "<td><div class='alineright'>{$price}</td>";
+                        echo "<td><div class='alineright'>" . number_format($totalprice, 2) . "</td>";
                     }
 
                     // end table
@@ -91,7 +100,13 @@
                 <table class='table table-hover table-responsive table-bordered'>
                     <tr>
                         <td><b>Total Amount</b></td>
-                        <?php echo "<td>" . number_format($TotalAmount, 2) . "</td>"; ?>
+                        <td>
+                        <div class="alineright">
+                        <span>
+                        <?php echo number_format($TotalAmount, 2); ?>
+                        </span>
+                        </div>
+                        </td>
                     </tr>
                 </table>
             </table>
