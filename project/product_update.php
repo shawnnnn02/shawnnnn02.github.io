@@ -271,6 +271,9 @@ function validateDate($date, $format = 'Y-n-j')
                 } else {
                     echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
                 }
+                if(isset($image)){
+                    unlink("uploads/" .$pimage);
+                }
             }
             // show errors
             catch (PDOException $exception) {

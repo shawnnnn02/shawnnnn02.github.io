@@ -69,7 +69,8 @@ session_start();
                       
 
             if ($save != false) {
-                header('Location: customer_read.php');
+                $_SESSION["login"] = $email;
+                header('Location: welcome.php');
             } else {
                 echo "<div class='alert alert-danger'><b>Unable to login:</b><br>$msg</div>";
             }           

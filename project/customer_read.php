@@ -39,7 +39,9 @@ if (!isset($_SESSION["login"])) {
         if($action=='deleted'){
             echo "<div class='alert alert-success'>Record was deleted.</div>";
         }
-        
+        if($action=='Cant Delete Record'){
+            echo "<div class='alert alert-success'>Unable to delete.</div>";
+        }
 
 
         // select all data
@@ -51,7 +53,7 @@ if (!isset($_SESSION["login"])) {
         $num = $stmt->rowCount();
 
         // link to create record form
-        echo "<a href='customer_create.php' class='btn btn-primary m-b-1em'>Sign in Customer</a>";
+        echo "<a href='customer_create.php' class='btn btn-primary m-b-1em'>Sign Up Customer</a>";
 
 
         //check if more than 0 record found

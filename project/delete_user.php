@@ -10,6 +10,7 @@ try {
     $query = "DELETE FROM customer WHERE customerID = ?";
     $stmt = $con->prepare($query);
     $stmt->bindParam(1, $customerID);
+    unlink("uploads/".$user_image); 
      
     if($stmt->execute()){
         // redirect to read records page and
