@@ -37,14 +37,14 @@
 .dropdown:hover .dropdown-content {display: block;}
 .dropdown:hover .dropbtn {background-color: #b3003b;}
 .logo{padding: 15px;}
-.loginbtn {
+.logoutbtn {
     margin: auto;
     background-color: #ddd;
     border: none;
     position: absolute;
     right: 0;
 }
-.loginbtn a{
+.logoutbtn a{
     text-decoration: none;
     color: black;
     font-size: 16px;
@@ -86,7 +86,7 @@
   </div>
 </div>
 
-<button class="loginbtn"><a href="login.php">Login</a></button>
+<button class="logoutbtn"><a href="logout.php">Logout</a></button>
 </div><!-- end menu -->
 
 </nav>
