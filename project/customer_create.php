@@ -58,7 +58,7 @@ function validateDate($date, $format = 'Y-n-d')
 <?php
 session_start();
 if (!isset($_SESSION["login"])) {
-    header("location: login.php");
+    header("location: index.php");
 }
 ?>
 <!DOCTYPE HTML>
@@ -172,37 +172,39 @@ if (!isset($_SESSION["login"])) {
             
             // new 'image' field
             $user_image = !empty($_FILES["user_image"]["name"])
-            ? sha1_file($_FILES['user_image']['tmp_name']) . "-" . basename($_FILES["user_image"]["name"])
-            : "";
+                ? sha1_file($_FILES['user_image']['tmp_name']) . "-" . basename($_FILES["user_image"]["name"])
+                : "";
             $user_image = htmlspecialchars(strip_tags($user_image));
-            if($user_image){
- 
+            if ($user_image) {
+
                 $target_directory = "uploads/";
                 $target_file = $target_directory . $user_image;
                 $file_type = pathinfo($target_file, PATHINFO_EXTENSION);
-             
+
                 // error message is empty
-                $file_upload_error_messages="";
-                
+                $file_upload_error_messages = "";
+
                 // make sure certain file types are allowed
                 $allowed_file_types = array("jpg", "jpeg", "png", "gif");
-                if(!in_array($file_type, $allowed_file_types)){
-                    $file_upload_error_messages.="<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                if (!in_array($file_type, $allowed_file_types)) {
+                    $msg = $msg . "Only JPG, JPEG, PNG, GIF files are allowed.<br>";
+                    $save = false;
                 }
                 // make sure file does not exist
-                if(file_exists($target_file)){
-                    $file_upload_error_messages.="<div>Image already exists. Try to change file name.</div>";
+                if (file_exists($target_file)) {
+                    $msg = $msg . "Image already exists. Try to change file name.<br>";
+                    $save = false;
                 }
                 // make sure submitted file is not too large, can't be larger than 1MB
-                if($_FILES['user_image']['size'] > 1024000){
-                    $file_upload_error_messages.="<div>Image must be less than 1 MB in size.</div>";
+                if ($_FILES['user_image']['size'] > 1024000) {
+                    $msg = $msg . "Image must be less than 1 MB in size.<br>";
+                    $save = false;
                 }
                 // make sure the 'uploads' folder exists
                 // if not, create it
-                if(!is_dir($target_directory)){
+                if (!is_dir($target_directory)) {
                     mkdir($target_directory, 0777, true);
                 }
-
             }
             // if $file_upload_error_messages is still empty
             if(empty($file_upload_error_messages)){
@@ -210,31 +212,26 @@ if (!isset($_SESSION["login"])) {
                 if(move_uploaded_file($_FILES["user_image"]["tmp_name"], $target_file)){
                     // it means photo was uploaded
                 }else{
-                    echo "<div class='alert alert-danger'>";
-                        echo "<div>Unable to upload photo.</div>";
-                        echo "<div>Update the record to upload photo.</div>";
-                    echo "</div>";
+                    $msg = $msg . "Pls Upload Photo.<br>";
+                    $save = false;
                 }
             }// if $file_upload_error_messages is NOT empty
             else{
-                // it means there are some errors, so show them to user
-                echo "<div class='alert alert-danger'>";
-                    echo "<div>{$file_upload_error_messages}</div>";
-                    echo "<div>Update the record to upload photo.</div>";
-                echo "</div>";
+                $msg = $msg . "Pls Upload Photo.<br>";
+                $save = false;
 
-                if (isset($_POST['uploads'])){
-                    $uploads = $_POST['uploads'];
+                if (isset($_POST['filePath'])){
+                    $filePath = $_POST['filePath'];
 
-                    if (file_exists($uploads)){
-                        unlink("uploads/".$user_image);
+                    if (file_exists($filePath)){
+                        unlink($filePath);
                         echo "Your file is deleted";
                     }else{
                         echo "Your file is not deleted";
                     }
                 }
+                
             }
-
 
             // include database connection
             include 'config/database.php';
@@ -292,11 +289,14 @@ if (!isset($_SESSION["login"])) {
                 </tr>
                 <tr>
                     <td>Password</td>
-                    <td><input type='text' name='passd' class='form-control' value="<?php if (isset($_POST['passd'])) echo $_POST['passd']; ?>" /></td>
+                    <td><input type='password' name='passd' class='form-control' value="<?php if (isset($_POST['passd'])) echo $_POST['passd']; ?>" id='myInput' />
+
+
+                    <input type="checkbox" onclick="myFunction()"> Show Password
                 </tr>
                 <tr>
                     <td>Confirm Password</td>
-                    <td><input type='text' name='confirmpassd' class='form-control' value="<?php if (isset($_POST['confirmpassd'])) echo $_POST['confirmpassd']; ?>" /></td>
+                    <td><input type='password' name='confirmpassd' class='form-control' value="<?php if (isset($_POST['confirmpassd'])) echo $_POST['confirmpassd']; ?>" id='myInput'/>
                 </tr>
                 <tr>
                     <td>Date of Birth</td>
@@ -342,6 +342,17 @@ if (!isset($_SESSION["login"])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
     <?php include 'footer/footer.php'; ?>
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myInput");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        }
+    </script>
 
 </body>
 </html>

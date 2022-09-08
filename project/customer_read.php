@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION["login"])) {
-    header("location: login.php");
+    header("location: index.php");
 }
 ?>
 
@@ -36,11 +36,12 @@ if (!isset($_SESSION["login"])) {
         // if it was redirected from delete.php
         $action = isset($_GET['action']) ? $_GET['action'] : "";
 
-        if($action=='deleted'){
+        // if it was redirected from delete.php
+        if ($action == 'deleted') {
             echo "<div class='alert alert-success'>Record was deleted.</div>";
         }
-        if($action=='Cant Delete Record'){
-            echo "<div class='alert alert-success'>Unable to delete.</div>";
+        if($action=='cantdelete'){
+            echo "<div class='alert alert-danger'>Unable To Delete Being In Order.</div>";
         }
 
 

@@ -333,7 +333,7 @@ function validateDate($date, $format = 'Y-n-j')
                 </tr>
                 <tr>
                     <td>Photo</td>
-                    <td><input type="file" name="pimage" class='form-control' value="<?php if (isset($_POST['pimage'])) echo $_POST['pimage']; ?>" /></td>
+                    <td><img src="uploads/<?php echo $pimage; ?>" width="50px" height="50px"><input type='file' name='pimage'/></td>
                 </tr>
                 <tr>
                     <td></td>

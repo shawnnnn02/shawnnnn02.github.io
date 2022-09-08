@@ -87,7 +87,9 @@ session_start();
                 </tr>
                 <tr>
                     <td>Password</td>
-                    <td><input type='text' name='passdw' class='form-control' value= "<?php if (isset($_POST['passdw'])) echo $_POST['passdw']; ?>" /></td>
+                    <td><input type='password' name='passdw' class='form-control' value= "<?php if (isset($_POST['passdw'])) echo $_POST['passdw']; ?>" id='myInput'/>
+
+                    <input type="checkbox" onclick="myFunction()"> Show Password
                 </tr>
                 
                 <tr>
@@ -104,6 +106,17 @@ session_start();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
     <?php include 'footer/footer.php'; ?>
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myInput");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        }
+    </script>
     
 </body>
 

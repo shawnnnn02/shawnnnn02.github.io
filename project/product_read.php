@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION["login"])) {
-    header("location: login.php");
+    header("location: index.php");
 }
 ?>
 
@@ -34,6 +34,15 @@ if (!isset($_SESSION["login"])) {
         include 'function/function.php';
 
         // delete message prompt will be here
+        $action = isset($_GET['action']) ? $_GET['action'] : "";
+
+        // if it was redirected from delete.php
+        if ($action == 'deleted') {
+            echo "<div class='alert alert-success'>Record was deleted.</div>";
+        }
+        if($action=='cantdelete'){
+            echo "<div class='alert alert-danger'>Unable To Delete Being In Order.</div>";
+        }
 
         // select all data
         $query = "SELECT productID, name, description, price, pimage FROM products ORDER BY productID DESC";

@@ -194,7 +194,6 @@ function validateDate($date, $format = 'Y-n-j')
                 ? sha1_file($_FILES['user_image']['tmp_name']) . "-" . basename($_FILES["user_image"]["name"])
                 : "";
             $user_image = htmlspecialchars(strip_tags($user_image));
-
             if ($user_image) {
 
                 $target_directory = "uploads/";
@@ -207,15 +206,18 @@ function validateDate($date, $format = 'Y-n-j')
                 // make sure certain file types are allowed
                 $allowed_file_types = array("jpg", "jpeg", "png", "gif");
                 if (!in_array($file_type, $allowed_file_types)) {
-                    $file_upload_error_messages .= "<div>Only JPG, JPEG, PNG, GIF files are allowed.</div>";
+                    $msg = $msg . "Only JPG, JPEG, PNG, GIF files are allowed.<br>";
+                    $save = false;
                 }
                 // make sure file does not exist
                 if (file_exists($target_file)) {
-                    $file_upload_error_messages .= "<div>Image already exists. Try to change file name.</div>";
+                    $msg = $msg . "Image already exists. Try to change file name.<br>";
+                    $save = false;
                 }
                 // make sure submitted file is not too large, can't be larger than 1MB
                 if ($_FILES['user_image']['size'] > 1024000) {
-                    $file_upload_error_messages .= "<div>Image must be less than 1 MB in size.</div>";
+                    $msg = $msg . "Image must be less than 1 MB in size.<br>";
+                    $save = false;
                 }
                 // make sure the 'uploads' folder exists
                 // if not, create it
@@ -224,24 +226,20 @@ function validateDate($date, $format = 'Y-n-j')
                 }
             }
             // if $file_upload_error_messages is still empty
-            if (empty($file_upload_error_messages)) {
+            if(empty($file_upload_error_messages)){
                 // it means there are no errors, so try to upload the file
-                if (move_uploaded_file($_FILES["user_image"]["tmp_name"], $target_file)) {
+                if(move_uploaded_file($_FILES["user_image"]["tmp_name"], $target_file)){
                     // it means photo was uploaded
-                } else {
-                    echo "<div class='alert alert-danger'>";
-                    echo "<div>Unable to upload photo.</div>";
-                    echo "<div>Update the record to upload photo.</div>";
-                    echo "</div>";
+                }else{
+                    $msg = $msg . "Pls Upload Photo.<br>";
+                    $save = false;
                 }
-            } // if $file_upload_error_messages is NOT empty
-            else {
-                // it means there are some errors, so show them to user
-                echo "<div class='alert alert-danger'>";
-                echo "<div>{$file_upload_error_messages}</div>";
-                echo "<div>Update the record to upload photo.</div>";
-                echo "</div>";
-            }
+            }// if $file_upload_error_messages is NOT empty
+            else{
+                $msg = $msg . "Pls Upload Photo.<br>";
+                $save = false;
+            }     
+            
 
             // write update query
             // in this case, it seemed like we have so many fields to pass and
@@ -265,11 +263,10 @@ function validateDate($date, $format = 'Y-n-j')
             } else {
                 echo "<div class='alert alert-danger'><b>Unable to save record:</b><br>$msg</div>";
             }
+            if($image != ""){
+                unlink("uploads/".$image);
+            }
         }
-        // show errors
-        // catch (PDOException $exception) {
-        //     die('ERROR: ' . $exception->getMessage());
-        // }
         ?>
 
 
