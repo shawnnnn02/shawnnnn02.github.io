@@ -55,7 +55,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
 <div class="logo">
-<h1><a href="#"><img src="asset/img/logo" width=50 height=50 alt="logo"></a></h1>
+<h1><a href="welcome.php"><img src="uploads/logo1.png" width=50 height=50 alt=""></a></h1>
 </div>
 
 <div class="menu">
