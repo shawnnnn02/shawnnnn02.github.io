@@ -87,7 +87,12 @@ if (!isset($_SESSION["login"])) {
                 echo "<td>{$lastname}</td>";
                 echo "<td>{$email}</td>";
                 echo "<td>{$status}</td>";
-                echo "<td>" . user_img($user_image) . "</td>";
+
+                if(empty($user_image)){
+                    echo"<td><img src='image/default-profile.jpg' width='auto' height='100px'></td>";
+                }else{
+                    echo "<td><img src='uploads/{$user_image}'width='auto' height='100px'></td>";
+                }
                 echo "<td>";
                 // read one record
                 echo "<a href='customer_read_one.php?customerID={$customerID}' class='btn btn-info m-r-1em'>Read</a>";

@@ -84,7 +84,12 @@ if (!isset($_SESSION["login"])) {
                 echo "<td>{$name}</td>";
                 echo "<td>{$description}</td>";
                 echo "<td>{$price}</td>";
-                echo "<td>" . pro_img($pimage) . "</td>";
+
+                if(empty($pimage)){
+                    echo"<td><img src='image/default-product-image.png' width='auto' height='100px'></td>";
+                }else{
+                    echo "<td><img src='uploads/{$pimage}'width='auto' height='100px'></td>";
+                }
                 echo "<td>";
                 // read one record
                 echo "<a href='product_read_one.php?productID={$productID}' class='btn btn-info m-r-1em'>Read</a>";
